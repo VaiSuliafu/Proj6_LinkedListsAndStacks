@@ -1,6 +1,10 @@
 package assign06;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.Scanner;
 
 /**
  * Class containing the checkFile method for checking if the (, [, and { symbols
@@ -20,8 +24,65 @@ public class BalancedSymbolChecker {
 	 * @throws FileNotFoundException if the file does not exist
 	 */
 	public static String checkFile(String filename) throws FileNotFoundException {
-		// FILL IN -- do not return null
-		return null;
+		File file = new File(filename);
+		Scanner scr = new Scanner(new FileReader(file));
+		String mainString = "";
+		
+		LinkedListStack<Character> stack = new LinkedListStack<Character>();
+
+		int lineNum = 0;
+		char [] charArr;
+		char currentCheckSymbol;
+		boolean inComment = false;
+		while (scr.hasNextLine())
+		{
+			charArr = scr.nextLine().toCharArray();
+			for (int i = 0; i < charArr.length; i++)
+			{
+				if (charArr[i] == '(' || charArr[i] == '{' || charArr[i] == '[')
+				{
+					stack.push(charArr[i]);
+				}
+				if (charArr[i] == ')' || charArr[i] == '}' || charArr[i] == ']')
+				{
+					currentCheckSymbol = stack.pop();
+					if (!checkMatchingSymbols(charArr[i], currentCheckSymbol))
+					{
+						unmatchedSymbol(lineNum, i, charArr[i], getMatchingSymbol(currentCheckSymbol));
+					}
+				}
+			}
+			lineNum++;
+		}
+		
+		if (!stack.isEmpty())
+		{
+			
+		}
+	}
+	
+	private static boolean checkMatchingSymbols (char c1, char c2)
+	{
+		if (c1 == '(' && c2 == ')')
+			return true;
+		else if (c1 == '{' && c2 == '}')
+			return true;
+		else if (c1 == '[' && c2 == ']')
+			return true;
+		else
+			return false;
+	}
+	
+	private static char getMatchingSymbol (char c)
+	{
+		if (c == '(')
+			return ')';
+		else if (c == '{')
+			return '}';
+		else if (c == '[')
+			return ']';
+		else
+			return '/';
 	}
 
 	/**

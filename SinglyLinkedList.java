@@ -203,7 +203,8 @@ public class SinglyLinkedList <T extends Comparable> implements List <T> {
 	@Override
 	public void clear() 
 	{
-		this.head = null;
+		this.head.setReference(null);
+		this.size = 0;
 	}
 
 	/**
