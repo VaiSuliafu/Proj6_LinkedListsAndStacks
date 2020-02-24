@@ -4,7 +4,7 @@ import java.util.NoSuchElementException;
 
 public class LinkedListStack <T extends Comparable> implements Stack <T> {
 
-	SinglyLinkedList<T> mainList;
+	private SinglyLinkedList<T> mainList;
 	
 	public LinkedListStack () {
 		mainList = new SinglyLinkedList<T>();
