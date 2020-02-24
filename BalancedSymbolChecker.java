@@ -10,7 +10,7 @@ import java.util.Scanner;
  * Class containing the checkFile method for checking if the (, [, and { symbols
  * in an input file are correctly matched.
  * 
- * @author Erin Parker && ??
+ * @author Erin Parker, Vai Suliafu, and Michael Eyer
  * @version ??
  */
 public class BalancedSymbolChecker {
@@ -25,41 +25,103 @@ public class BalancedSymbolChecker {
 	 */
 	public static String checkFile(String filename) throws FileNotFoundException {
 		File file = new File(filename);
-		Scanner scr = new Scanner(new FileReader(file));
-		String mainString = "";
 		
+		if (!file.exists())
+		{
+			throw new FileNotFoundException();
+		}
+//		Scanner scr = new Scanner(file);
+		Scanner scr = new Scanner(new FileReader(file));
 		LinkedListStack<Character> stack = new LinkedListStack<Character>();
 
 		int lineNum = 0;
 		char [] charArr;
 		char currentCheckSymbol;
-		boolean inComment = false;
-		while (scr.hasNextLine())
+		boolean inBlockComment = false;
+		
+		// while the scanner has a next line
+		while(scr.hasNextLine())
 		{
+			// read the next line into an array of chars
 			charArr = scr.nextLine().toCharArray();
-			for (int i = 0; i < charArr.length; i++)
+			
+			// loop through the array of chars (each line)
+			int i = 0;
+			while (i < charArr.length)
 			{
-				if (charArr[i] == '(' || charArr[i] == '{' || charArr[i] == '[')
+				// if there is a line comment, we can stop looping through this line immediately
+				if (i != charArr.length - 1 && charArr[i] == '/' && charArr[i+1] == '/')
 				{
-					stack.push(charArr[i]);
+					// breaking out for loop
+					break;
 				}
-				if (charArr[i] == ')' || charArr[i] == '}' || charArr[i] == ']')
+				
+				// if not currently in a comment
+				while(!inBlockComment && i < charArr.length)
 				{
-					currentCheckSymbol = stack.pop();
-					if (!checkMatchingSymbols(charArr[i], currentCheckSymbol))
+					// check if the next two characters in char array begin a comment
+					if (i != charArr.length - 1 && charArr[i] == '/' && charArr[i+1] == '*')
 					{
-						unmatchedSymbol(lineNum, i, charArr[i], getMatchingSymbol(currentCheckSymbol));
+						inBlockComment = true;
+						break;
 					}
+					
+					// if a specific char is observed, push it on the stack
+					if (charArr[i] == '(' || charArr[i] == '{' || charArr[i] == '[')
+					{
+						stack.push(charArr[i]);
+					}
+					
+					// if a specific char is observed, check if top char on stack is the matches observed char
+					if (charArr[i] == ')' || charArr[i] == '}' || charArr[i] == ']')
+					{
+						currentCheckSymbol = stack.pop();
+						
+						// if symbols do not match print the error message
+						if (!checkMatchingSymbols(charArr[i], currentCheckSymbol))
+						{
+							return unmatchedSymbol(lineNum, i, charArr[i], getMatchingSymbol(currentCheckSymbol));
+						}
+					}
+					
+					// increment i
+					i++;
 				}
+				
+				// this block of code runs only runs if we entered a comment earlier at line 53
+				while(inBlockComment && i < charArr.length)
+				{
+					
+					// check if this comment ends
+					if (i != charArr.length - 1 && charArr[i] == '*' && charArr[i+1] == '/')
+					{
+						inBlockComment = false;
+						break;
+					}
+					
+					// increment i so the next char is checked
+					i++;
+				}
+
 			}
 			lineNum++;
 		}
 		
+		// print out the message if we ended in block comment
+		if (inBlockComment)
+		{
+			return unfinishedComment();
+		}
+		
+		// print out the message if stack was not empty at end
 		if (!stack.isEmpty())
 		{
-			
+			return unmatchedSymbolAtEOF(stack.pop());
 		}
+		
+		return allSymbolsMatch();
 	}
+
 	
 	private static boolean checkMatchingSymbols (char c1, char c2)
 	{
