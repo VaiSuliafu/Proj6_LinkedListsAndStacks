@@ -4,13 +4,18 @@ import java.util.NoSuchElementException;
 
 public class LinkedListStack <T extends Comparable> implements Stack <T> {
 
+	SinglyLinkedList<T> mainList;
+	
+	public LinkedListStack () {
+		mainList = new SinglyLinkedList<T>();
+	}
+	
 	/**
 	 * Removes all of the elements from the stack.
 	 */
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
-		
+		mainList.clear();
 	}
 
 	/**
@@ -19,7 +24,7 @@ public class LinkedListStack <T extends Comparable> implements Stack <T> {
 	@Override
 	public boolean isEmpty() {
 		// TODO Auto-generated method stub
-		return false;
+		return mainList.isEmpty();
 	}
 
 	/**
@@ -31,7 +36,9 @@ public class LinkedListStack <T extends Comparable> implements Stack <T> {
 	@Override
 	public T peek() throws NoSuchElementException {
 		// TODO Auto-generated method stub
-		return null;
+		if (mainList.size() == 0)
+			throw new NoSuchElementException();
+		return mainList.getFirst();
 	}
 
 	/**
@@ -43,7 +50,9 @@ public class LinkedListStack <T extends Comparable> implements Stack <T> {
 	@Override
 	public T pop() throws NoSuchElementException {
 		// TODO Auto-generated method stub
-		return null;
+		if (mainList.size() == 0)
+			throw new NoSuchElementException();
+		return mainList.removeFirst();
 	}
 
 	/**
@@ -53,8 +62,7 @@ public class LinkedListStack <T extends Comparable> implements Stack <T> {
 	 */
 	@Override
 	public void push(T element) {
-		// TODO Auto-generated method stub
-		
+		mainList.addFirst(element);
 	}
 
 	/**
@@ -62,8 +70,7 @@ public class LinkedListStack <T extends Comparable> implements Stack <T> {
 	 */
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return mainList.size();
 	}
 
 
