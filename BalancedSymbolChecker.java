@@ -30,8 +30,8 @@ public class BalancedSymbolChecker {
 		{
 			throw new FileNotFoundException();
 		}
-//		Scanner scr = new Scanner(file);
-		Scanner scr = new Scanner(new FileReader(file));
+		Scanner scr = new Scanner(file);
+//		Scanner scr = new Scanner(new FileReader(file));
 		LinkedListStack<Character> stack = new LinkedListStack<Character>();
 
 		int lineNum = 0;
@@ -69,6 +69,7 @@ public class BalancedSymbolChecker {
 					// if a specific char is observed, push it on the stack
 					if (charArr[i] == '(' || charArr[i] == '{' || charArr[i] == '[')
 					{
+						
 						stack.push(charArr[i]);
 					}
 					
@@ -80,7 +81,7 @@ public class BalancedSymbolChecker {
 						// if symbols do not match print the error message
 						if (!checkMatchingSymbols(charArr[i], currentCheckSymbol))
 						{
-							return unmatchedSymbol(lineNum, i, charArr[i], getMatchingSymbol(currentCheckSymbol));
+							return unmatchedSymbol(lineNum+1, i+1, charArr[i], getMatchingSymbol(currentCheckSymbol));
 						}
 					}
 					
@@ -125,11 +126,11 @@ public class BalancedSymbolChecker {
 	
 	private static boolean checkMatchingSymbols (char c1, char c2)
 	{
-		if (c1 == '(' && c2 == ')')
+		if (c1 == ')' && c2 == '(')
 			return true;
-		else if (c1 == '{' && c2 == '}')
+		else if (c1 == ']' && c2 == '[')
 			return true;
-		else if (c1 == '[' && c2 == ']')
+		else if (c1 == '}' && c2 == '{')
 			return true;
 		else
 			return false;
@@ -168,7 +169,7 @@ public class BalancedSymbolChecker {
 	 * @return the error message
 	 */
 	private static String unmatchedSymbolAtEOF(char symbolExpected) {
-		return "ERROR: Unmatched symbol at the end of file. Expected " + symbolExpected + ".";
+		return "ERROR: Unmatched symbol at the end of file. Expected " + getMatchingSymbol(symbolExpected) + ".";
 	}
 
 	/**
