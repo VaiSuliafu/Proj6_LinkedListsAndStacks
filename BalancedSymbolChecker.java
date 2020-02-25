@@ -38,6 +38,7 @@ public class BalancedSymbolChecker {
 		char [] charArr;
 		char currentCheckSymbol;
 		boolean inBlockComment = false;
+		boolean inString = false;
 		
 		// while the scanner has a next line
 		while(scr.hasNextLine())
@@ -49,16 +50,17 @@ public class BalancedSymbolChecker {
 			int i = 0;
 			while (i < charArr.length)
 			{
-				// if there is a line comment, we can stop looping through this line immediately
-				if (i != charArr.length - 1 && charArr[i] == '/' && charArr[i+1] == '/')
-				{
-					// breaking out for loop
-					break;
-				}
 				
 				// if not currently in a comment
 				while(!inBlockComment && i < charArr.length)
 				{
+					// if there is a line comment, we can stop looping through this line immediately
+					if (i != charArr.length - 1 && charArr[i] == '/' && charArr[i+1] == '/')
+					{
+						i = charArr.length;
+						break;
+					}
+					
 					// check if the next two characters in char array begin a comment
 					if (i != charArr.length - 1 && charArr[i] == '/' && charArr[i+1] == '*')
 					{
@@ -66,6 +68,23 @@ public class BalancedSymbolChecker {
 						break;
 					}
 					
+					// check for start of a string (for example, " ( ")
+					if (charArr[i] == '"')
+					{
+						inString = true;
+						i++;
+						break;
+					}
+					
+					// check for character literal (example '{')
+					if (charArr[i] == '\'' && charArr[i+2] == '\'')
+					{
+
+						i+=3;
+						continue;
+					}
+					
+
 					// if a specific char is observed, push it on the stack
 					if (charArr[i] == '(' || charArr[i] == '{' || charArr[i] == '[')
 					{
@@ -102,6 +121,22 @@ public class BalancedSymbolChecker {
 					
 					// increment i so the next char is checked
 					i++;
+				}
+				
+				// this block of code runs only if we enter a string (for example "print(x)")
+				while (inString && i < charArr.length)
+				{
+					// check if next char ends the string
+					if (charArr[i] == '"')
+					{
+						inString = false;
+						i++;
+						break;
+					}
+					else
+					{
+						i++;
+					}
 				}
 
 			}
