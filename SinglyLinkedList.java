@@ -108,6 +108,8 @@ public class SinglyLinkedList <T> implements List <T> {
 	@Override
 	public T removeFirst() throws NoSuchElementException 
 	{	
+		if (size == 0)
+			throw new NoSuchElementException();
 		Node<T> removalNode = head.getReference();
 		T temp = removalNode.getValue();
 		head.setReference(removalNode.getReference());
@@ -220,7 +222,7 @@ public class SinglyLinkedList <T> implements List <T> {
 		@SuppressWarnings("unchecked")
 		T[] arr = (T[]) new Object[this.size];
 		
-		Node<T> temp = head;
+		Node<T> temp = head.getReference();
 		
 		for (int i = 0; i < this.size; i++)
 		{
@@ -269,6 +271,7 @@ public class SinglyLinkedList <T> implements List <T> {
 			{
 				T tempVal = reference.getReference().getValue();
 				reference.setReference(reference.getReference().getReference());
+				lastRemoved = true;
 			}
 
 		}
