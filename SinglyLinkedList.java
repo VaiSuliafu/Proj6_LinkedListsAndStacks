@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-public class SinglyLinkedList <T extends Comparable> implements List <T> {
+public class SinglyLinkedList <T> implements List <T> {
 
 	private Node<T> head;
 	private int size;
@@ -108,6 +108,8 @@ public class SinglyLinkedList <T extends Comparable> implements List <T> {
 	@Override
 	public T removeFirst() throws NoSuchElementException 
 	{	
+		if (size == 0)
+			throw new NoSuchElementException();
 		Node<T> removalNode = head.getReference();
 		T temp = removalNode.getValue();
 		head.setReference(removalNode.getReference());
@@ -163,7 +165,7 @@ public class SinglyLinkedList <T extends Comparable> implements List <T> {
 		
 		while (iter.hasNext())
 		{
-			if (element.compareTo(iter.next()) == 0)
+			if (element == iter.next())
 			{
 				return index;
 			}
@@ -203,7 +205,8 @@ public class SinglyLinkedList <T extends Comparable> implements List <T> {
 	@Override
 	public void clear() 
 	{
-		this.head = null;
+		this.head.setReference(null);
+		this.size = 0;
 	}
 
 	/**
@@ -219,7 +222,7 @@ public class SinglyLinkedList <T extends Comparable> implements List <T> {
 		@SuppressWarnings("unchecked")
 		T[] arr = (T[]) new Object[this.size];
 		
-		Node<T> temp = head;
+		Node<T> temp = head.getReference();
 		
 		for (int i = 0; i < this.size; i++)
 		{
@@ -264,8 +267,13 @@ public class SinglyLinkedList <T extends Comparable> implements List <T> {
 			if (lastRemoved)
 				throw new IllegalStateException();
 			
-			T tempVal = reference.getReference().getValue();
-			reference.setReference(reference.getReference().getReference());
+			if (hasNext())
+			{
+				T tempVal = reference.getReference().getValue();
+				reference.setReference(reference.getReference().getReference());
+				lastRemoved = true;
+			}
+
 		}
 	}
 		

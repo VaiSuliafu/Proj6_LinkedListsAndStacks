@@ -1,12 +1,17 @@
 package assign06;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 /**
  * Class containing the checkFile method for checking if the (, [, and { symbols
  * in an input file are correctly matched.
  * 
- * @author Erin Parker && ??
+ * @author Erin Parker, Vai Suliafu, and Michael Eyer
  * @version ??
  */
 public class BalancedSymbolChecker {
@@ -20,8 +25,170 @@ public class BalancedSymbolChecker {
 	 * @throws FileNotFoundException if the file does not exist
 	 */
 	public static String checkFile(String filename) throws FileNotFoundException {
-		// FILL IN -- do not return null
-		return null;
+		File file = new File(filename);
+		
+		if (!file.exists())
+		{
+			throw new FileNotFoundException();
+		}
+		Scanner scr = new Scanner(file);
+//		Scanner scr = new Scanner(new FileReader(file));
+		LinkedListStack<Character> stack = new LinkedListStack<Character>();
+
+		int lineNum = 0;
+		char [] charArr;
+		char currentCheckSymbol = 'a';
+		boolean inBlockComment = false;
+		boolean inString = false;
+		
+		// while the scanner has a next line
+		while(scr.hasNextLine())
+		{
+			// read the next line into an array of chars
+			charArr = scr.nextLine().toCharArray();
+			
+			// loop through the array of chars (each line)
+			int i = 0;
+			while (i < charArr.length)
+			{
+				
+				// if not currently in a comment
+				while(!inBlockComment && i < charArr.length)
+				{
+					// if there is a line comment, we can stop looping through this line immediately
+					if (i != charArr.length - 1 && charArr[i] == '/' && charArr[i+1] == '/')
+					{
+						i = charArr.length;
+						break;
+					}
+					
+					// check if the next two characters in char array begin a comment
+					if (i != charArr.length - 1 && charArr[i] == '/' && charArr[i+1] == '*')
+					{
+						inBlockComment = true;
+						break;
+					}
+					
+					// check for start of a string (for example, " ( ")
+					if (charArr[i] == '"')
+					{
+						inString = true;
+						i++;
+						break;
+					}
+					
+					// check for character literal (example '{')
+					if (charArr[i] == '\'' && charArr[i+2] == '\'')
+					{
+
+						i+=3;
+						continue;
+					}
+					
+
+					// if a specific char is observed, push it on the stack
+					if (charArr[i] == '(' || charArr[i] == '{' || charArr[i] == '[')
+					{
+						
+						stack.push(charArr[i]);
+					}
+					
+					// if a specific char is observed, check if top char on stack is the matches observed char
+					if (charArr[i] == ')' || charArr[i] == '}' || charArr[i] == ']')
+					{
+						try
+						{
+							currentCheckSymbol = stack.pop();
+						}
+						catch (NoSuchElementException e)
+						{
+							return unmatchedSymbol(lineNum+1, i+1, getMatchingSymbol(currentCheckSymbol), ' ');
+						}
+							
+						// if symbols do not match print the error message
+						if (!checkMatchingSymbols(charArr[i], currentCheckSymbol))
+						{
+							return unmatchedSymbol(lineNum+1, i+1, charArr[i], getMatchingSymbol(currentCheckSymbol));
+						}
+					}
+					
+					// increment i
+					i++;
+				}
+				
+				// this block of code runs only runs if we entered a comment earlier at line 53
+				while(inBlockComment && i < charArr.length)
+				{
+					
+					// check if this comment ends
+					if (i != charArr.length - 1 && charArr[i] == '*' && charArr[i+1] == '/')
+					{
+						inBlockComment = false;
+						break;
+					}
+					
+					// increment i so the next char is checked
+					i++;
+				}
+				
+				// this block of code runs only if we enter a string (for example "print(x)")
+				while (inString && i < charArr.length)
+				{
+					// check if next char ends the string and is not escaped
+					if (charArr[i] == '"' && charArr[i-1] != '\\')
+					{
+						inString = false;
+						i++;
+						break;
+					}
+					else
+					{
+						i++;
+					}
+				}
+
+			}
+			lineNum++;
+		}
+		
+		// print out the message if we ended in block comment
+		if (inBlockComment)
+		{
+			return unfinishedComment();
+		}
+		
+		// print out the message if stack was not empty at end
+		if (!stack.isEmpty())
+		{
+			return unmatchedSymbolAtEOF(stack.pop());
+		}
+		
+		return allSymbolsMatch();
+	}
+
+	
+	private static boolean checkMatchingSymbols (char c1, char c2)
+	{
+		if (c1 == ')' && c2 == '(')
+			return true;
+		else if (c1 == ']' && c2 == '[')
+			return true;
+		else if (c1 == '}' && c2 == '{')
+			return true;
+		else
+			return false;
+	}
+	
+	private static char getMatchingSymbol (char c)
+	{
+		if (c == '(')
+			return ')';
+		else if (c == '{')
+			return '}';
+		else if (c == '[')
+			return ']';
+		else
+			return '/';
 	}
 
 	/**
@@ -45,7 +212,7 @@ public class BalancedSymbolChecker {
 	 * @return the error message
 	 */
 	private static String unmatchedSymbolAtEOF(char symbolExpected) {
-		return "ERROR: Unmatched symbol at the end of file. Expected " + symbolExpected + ".";
+		return "ERROR: Unmatched symbol at the end of file. Expected " + getMatchingSymbol(symbolExpected) + ".";
 	}
 
 	/**
