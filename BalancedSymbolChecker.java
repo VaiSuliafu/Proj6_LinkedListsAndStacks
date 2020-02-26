@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
@@ -36,7 +37,7 @@ public class BalancedSymbolChecker {
 
 		int lineNum = 0;
 		char [] charArr;
-		char currentCheckSymbol;
+		char currentCheckSymbol = 'a';
 		boolean inBlockComment = false;
 		boolean inString = false;
 		
@@ -95,8 +96,15 @@ public class BalancedSymbolChecker {
 					// if a specific char is observed, check if top char on stack is the matches observed char
 					if (charArr[i] == ')' || charArr[i] == '}' || charArr[i] == ']')
 					{
-						currentCheckSymbol = stack.pop();
-						
+						try
+						{
+							currentCheckSymbol = stack.pop();
+						}
+						catch (NoSuchElementException e)
+						{
+							return unmatchedSymbol(lineNum+1, i+1, getMatchingSymbol(currentCheckSymbol), ' ');
+						}
+							
 						// if symbols do not match print the error message
 						if (!checkMatchingSymbols(charArr[i], currentCheckSymbol))
 						{
@@ -126,8 +134,8 @@ public class BalancedSymbolChecker {
 				// this block of code runs only if we enter a string (for example "print(x)")
 				while (inString && i < charArr.length)
 				{
-					// check if next char ends the string
-					if (charArr[i] == '"')
+					// check if next char ends the string and is not escaped
+					if (charArr[i] == '"' && charArr[i-1] != '\\')
 					{
 						inString = false;
 						i++;
