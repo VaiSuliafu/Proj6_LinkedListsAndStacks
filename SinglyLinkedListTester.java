@@ -192,7 +192,36 @@ public class SinglyLinkedListTester <T> {
 		assertEquals('b', linkedList.get(0));
 	}
 	
-
+	@Test
+	void remove3()
+	{
+		linkedList.addFirst('c');
+		linkedList.addFirst('b');
+		assertEquals('b', linkedList.remove(0));
+		assertEquals('c', linkedList.remove(0));
+	}
+	
+	@Test
+	void remove4()
+	{
+		linkedList.addFirst('a');
+		assertEquals('a', linkedList.remove(0));
+	}
+	
+	@Test
+	void remove5()
+	{
+		linkedList.addFirst('d');
+		linkedList.addFirst('c');
+		linkedList.addFirst('b');
+		linkedList.addFirst('a');
+		assertEquals('d', linkedList.remove(3));
+		assertEquals('c', linkedList.remove(2));
+		assertEquals('b', linkedList.remove(1));
+		assertEquals('a', linkedList.remove(0));
+	}
+	
+	@Test
 	void removeFirst()
 	{
 		linkedList.addFirst('a');
@@ -203,11 +232,13 @@ public class SinglyLinkedListTester <T> {
 		assertEquals('a', linkedList.removeFirst());
 	}
 	
+	@Test
 	void removeFirstNoElements()
 	{
 		assertThrows(NoSuchElementException.class, () -> {linkedList.removeFirst();});
 	}
 	
+	@Test
 	void removeBadIndex()
 	{
 		linkedList.addFirst('a');
@@ -215,6 +246,7 @@ public class SinglyLinkedListTester <T> {
 		assertThrows(IndexOutOfBoundsException.class, () -> {linkedList.remove(3);});
 	}
 	
+	@Test
 	void testToArray()
 	{
 		linkedList.addFirst('c');
@@ -225,6 +257,7 @@ public class SinglyLinkedListTester <T> {
 		assertEquals('c', linkedList.toArray()[2]);
 	}
 	
+	@Test
 	void testSize()
 	{
 		linkedList.addFirst('c');
@@ -233,6 +266,7 @@ public class SinglyLinkedListTester <T> {
 		assertEquals(3, linkedList.size());
 	}
 	
+	@Test
 	void testClear()
 	{
 		linkedList.addFirst('c');
@@ -242,6 +276,7 @@ public class SinglyLinkedListTester <T> {
 		assertTrue(linkedList.isEmpty());
 	}
 	
+	@Test
 	void testIndexOf()
 	{
 		linkedList.addFirst('c');
@@ -250,6 +285,7 @@ public class SinglyLinkedListTester <T> {
 		assertEquals(1, linkedList.indexOf('b'));
 	}
 	
+	@Test
 	void testIndexOfBadIndex()
 	{
 		linkedList.addFirst('c');
