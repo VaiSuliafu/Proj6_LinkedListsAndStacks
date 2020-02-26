@@ -2,7 +2,7 @@ package assign06;
 
 import java.util.NoSuchElementException;
 
-public class LinkedListStack <T extends Comparable> implements Stack <T> {
+public class LinkedListStack <T> implements Stack <T> {
 
 	private SinglyLinkedList<T> mainList;
 	

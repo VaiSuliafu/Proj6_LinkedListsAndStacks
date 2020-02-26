@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-public class SinglyLinkedList <T extends Comparable> implements List <T> {
+public class SinglyLinkedList <T> implements List <T> {
 
 	private Node<T> head;
 	private int size;
@@ -163,7 +163,7 @@ public class SinglyLinkedList <T extends Comparable> implements List <T> {
 		
 		while (iter.hasNext())
 		{
-			if (element.compareTo(iter.next()) == 0)
+			if (element == iter.next())
 			{
 				return index;
 			}
@@ -265,8 +265,12 @@ public class SinglyLinkedList <T extends Comparable> implements List <T> {
 			if (lastRemoved)
 				throw new IllegalStateException();
 			
-			T tempVal = reference.getReference().getValue();
-			reference.setReference(reference.getReference().getReference());
+			if (hasNext())
+			{
+				T tempVal = reference.getReference().getValue();
+				reference.setReference(reference.getReference().getReference());
+			}
+
 		}
 	}
 		
